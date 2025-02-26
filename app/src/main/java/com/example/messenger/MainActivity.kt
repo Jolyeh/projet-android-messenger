@@ -50,6 +50,10 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.messenger.ui.theme.MessengerTheme
 
 class MainActivity : ComponentActivity() {
@@ -58,7 +62,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MessengerTheme {
-                ChatPage()
+                AppNavigation()
             }
         }
     }
@@ -66,7 +70,7 @@ class MainActivity : ComponentActivity() {
 
 //pages
 @Composable
-fun LoginPage(modifier: Modifier = Modifier) {
+fun LoginPage(navController: NavController, modifier: Modifier = Modifier) {
     val email = remember {
         mutableStateOf("")
     }
@@ -135,7 +139,9 @@ fun LoginPage(modifier: Modifier = Modifier) {
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFF0062DE)
                 ),
-                onClick = {}
+                onClick = {
+                    navController.navigate("chat")
+                }
             ) {
                 Text(
                     "Se connecter",
@@ -165,7 +171,7 @@ fun LoginPage(modifier: Modifier = Modifier) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChatPage(modifier: Modifier = Modifier) {
+fun ChatPage(navController: NavController, modifier: Modifier = Modifier) {
     Scaffold (
         containerColor = Color.Black,
         topBar = {
@@ -266,6 +272,20 @@ fun ChatPage(modifier: Modifier = Modifier) {
 
 // navigation
 
+@Composable
+fun AppNavigation() {
+    val navController = rememberNavController() // Initialisation du contrôleur de navigation
+
+    NavHost(navController = navController, startDestination = "login") {
+        composable("login") {
+            LoginPage(navController)  // Passer le NavController
+        }
+        composable("chat") {
+            ChatPage(navController)  // Passer le NavController
+        }
+    }
+}
+
 
 
 //composants
@@ -326,6 +346,6 @@ fun StoryItem(modifier: Modifier = Modifier, name: String?) {
 @Composable
 fun GreetingPreview() {
     MessengerTheme {
-        ChatPage()
+        AppNavigation()
     }
 }
